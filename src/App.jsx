@@ -81,7 +81,7 @@ export default function App() {
 
   if (view === 'settings') {
     return (
-      <div>
+      <main className="settings">
         <h2>Settings</h2>
         <Feedback feedback={feedback} />
         <label>Contact number (shown in the message) *</label>
@@ -90,29 +90,33 @@ export default function App() {
           setCfg({ ...cfg, phone });
           if (phone.trim()) setErrors((current) => current.filter((error) => error !== PHONE_ERROR));
         }} />
-        <div className="row">
+        <div className="row settings-grid">
           <div><label>Standard fixed charge *</label><input type="number" step="any" value={cfg.fixedStd} onChange={(e) => setCfg({ ...cfg, fixedStd: e.target.value })} /></div>
           <div><label>Tax per sq ft *</label><input type="number" step="any" value={cfg.taxRate} onChange={(e) => setCfg({ ...cfg, taxRate: e.target.value })} /></div>
           <div><label>Due day of month *</label><input type="number" value={cfg.dueDay} onChange={(e) => setCfg({ ...cfg, dueDay: e.target.value })} /></div>
         </div>
         <h3>Per person</h3>
-        <table><thead><tr><td></td><td>Fixed charge ₹</td><td>Municipal tax ₹</td></tr></thead><tbody>
+        <div className="table-wrap">
+        <table className="settings-table"><thead><tr><th scope="col">Person</th><th scope="col">Fixed charge ₹</th><th scope="col">Municipal tax ₹</th></tr></thead><tbody>
           {cfg.people.map((p, i) => (
             <tr key={p.key}><td>{p.hi}</td>
-              <td><input type="number" step="any" value={p.fixed} onChange={(e) => setP(i, 'fixed', e.target.value)} /></td>
-              <td><input type="number" step="any" value={p.tax} onChange={(e) => setP(i, 'tax', e.target.value)} /></td></tr>
+              <td data-label="Fixed charge ₹"><input aria-label={`${p.hi} fixed charge`} type="number" step="any" value={p.fixed} onChange={(e) => setP(i, 'fixed', e.target.value)} /></td>
+              <td data-label="Municipal tax ₹"><input aria-label={`${p.hi} municipal tax`} type="number" step="any" value={p.tax} onChange={(e) => setP(i, 'tax', e.target.value)} /></td></tr>
           ))}</tbody></table>
+        </div>
+        <div className="settings-actions">
         <button onClick={() => setView('main')}>Done</button>
         <button className="alt" onClick={() => {
           if (confirm('Reset all settings to defaults?'))
             setCfg({ ...DEFAULT_CFG, people: DEFAULT_CFG.people.map((person) => ({ ...person })) });
         }}>Reset to defaults</button>
-      </div>
+        </div>
+      </main>
     );
   }
 
   return (
-    <form onSubmit={generate}>
+    <form className="calculator" onSubmit={generate}>
       <h2>Bill Calculator <button type="button" className="alt" onClick={() => {
         setFeedback({ type: 'success', text: 'Settings loaded.' });
         setView('settings');
